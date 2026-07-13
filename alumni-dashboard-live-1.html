@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CloverPath Alumni</title>
+<link rel="icon" type="image/png" href="https://cdn.prod.website-files.com/68bf2f9e0722f5e0b402ad4d/690fe64080636dddc021d46b_CloverPath%20Favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --green: #008208;
+    --green-light: #7bbc00;
+    --forest: #0f3d1e;
+    --cream: #f7f5f0;
+    --ink: #16211a;
+    --muted: #5f6b62;
+    --line: #e4e0d6;
+    --card: #ffffff;
+    --green-tint: #eef5ee;
+    --radius: 16px;
+    --shadow: 0 1px 2px rgba(15, 61, 30, 0.04), 0 8px 24px rgba(15, 61, 30, 0.06);
+    /* Inter throughout to match the main CloverPath dashboard.
+       Headings and numbers carry heavier weights per element below. */
+    --serif: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+
+  :focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Top bar */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px clamp(16px, 4vw, 28px);
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand .logo {
+    height: 26px;
+    width: auto;
+    display: block;
+  }
+  .brand .context {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--muted);
+    padding-left: 12px;
+    border-left: 1px solid var(--line);
+  }
+  .who {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .who .name { font-weight: 600; font-size: 14px; }
+  .avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--forest);
+    color: #fff;
+    display: grid; place-items: center;
+    font-weight: 600; font-size: 13px;
+  }
+  .ghost-btn {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 4px;
+  }
+  .ghost-btn:hover { color: var(--ink); }
+
+  /* Layout */
+  .wrap {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: clamp(24px, 5vw, 40px) clamp(16px, 4vw, 28px) 80px;
+  }
+  .welcome { margin-bottom: 28px; }
+  .welcome h1 {
+    font-family: var(--serif);
+    font-weight: 800;
+    font-size: clamp(25px, 5vw, 32px);
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+  .welcome p {
+    color: var(--muted);
+    font-size: 15px;
+    margin-top: 6px;
+    max-width: 52ch;
+  }
+
+  .grid {
+    display: flex;
+    gap: clamp(18px, 2.5vw, 24px);
+    align-items: flex-start;
+  }
+  .col-main {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(18px, 2.5vw, 24px);
+  }
+  .col-rail {
+    flex: 0 0 clamp(264px, 24vw, 320px);
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(18px, 2.5vw, 24px);
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .card-pad { padding: clamp(18px, 3.5vw, 24px); }
+
+  .card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .card-head h2 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 19px;
+    letter-spacing: -0.01em;
+  }
+  .card-head .count {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .sub { font-size: 13px; color: var(--muted); }
+
+  /* Capacity hero */
+  .capacity {
+    background: linear-gradient(150deg, var(--forest) 0%, #0a2e15 100%);
+    color: #fff;
+    border: none;
+    overflow: hidden;
+    position: relative;
+  }
+  .capacity .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--green-light);
+    margin-bottom: 14px;
+  }
+  .capacity h2 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(22px, 4.5vw, 26px);
+    line-height: 1.15;
+    margin-bottom: 4px;
+  }
+  .capacity .cap-sub {
+    color: rgba(255,255,255,0.66);
+    font-size: 14px;
+    max-width: 44ch;
+  }
+  .cap-control {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin: 24px 0 22px;
+  }
+  .stepper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .stepper button {
+    width: 46px; height: 52px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .stepper button:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
+  .stepper button:disabled { opacity: 0.3; cursor: not-allowed; }
+  .stepper .val {
+    min-width: 64px;
+    text-align: center;
+    font-family: var(--serif);
+    font-weight: 800;
+    font-size: 34px;
+    line-height: 1;
+  }
+  .cap-label { font-size: 14px; }
+  .cap-label strong { display: block; font-size: 15px; }
+  .cap-label span { color: rgba(255,255,255,0.6); font-size: 13px; }
+
+  .pips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 8px;
+  }
+  .pip {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.35);
+    transition: all 0.2s ease;
+  }
+  .pip.filled {
+    background: var(--green-light);
+    border-color: var(--green-light);
+  }
+  .cap-foot {
+    font-size: 13px;
+    color: rgba(255,255,255,0.62);
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    margin-top: 18px;
+  }
+  .cap-foot.paused { color: var(--green-light); }
+
+  /* Other ways to help (panels / guest lectures) */
+  .eng-tabs {
+    display: flex;
+    gap: 4px;
+    margin: 4px 0 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eng-tab {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 8px 4px;
+    margin-bottom: -1px;
+    cursor: pointer;
+  }
+  .eng-tab:hover { color: var(--ink); }
+  .eng-tab.active { color: var(--green); border-bottom-color: var(--green); }
+  .eng-tab .pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #fff;
+    background: var(--green);
+    border-radius: 999px;
+    padding: 2px 7px;
+    margin-left: 7px;
+    vertical-align: middle;
+  }
+  .eng-desc { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+
+  .eng-optin {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--green-tint);
+    border: 1px solid #d8e8d8;
+    border-radius: 12px;
+  }
+  .eng-optin .label { font-weight: 600; font-size: 15px; }
+  .eng-optin .label span { display: block; font-weight: 400; font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .switch {
+    flex: none;
+    width: 46px; height: 27px;
+    border-radius: 999px;
+    background: #cfd6cf;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.18s ease;
+  }
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 21px; height: 21px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    transition: transform 0.18s ease;
+  }
+  .switch[aria-pressed="true"] { background: var(--green); }
+  .switch[aria-pressed="true"]::after { transform: translateX(19px); }
+
+  .eng-form { margin-top: 18px; }
+  .eng-form.hidden { display: none; }
+  .eng-field { margin-bottom: 18px; }
+  .eng-field:last-child { margin-bottom: 0; }
+  .eng-field .flabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 9px;
+    display: block;
+  }
+  .seg {
+    display: inline-flex;
+    flex-wrap: wrap;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 3px;
+  }
+  .seg button {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .seg button:hover { color: var(--ink); }
+  .seg button.active { background: var(--green); color: #fff; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .chip:hover { border-color: #cfc9bb; color: var(--ink); }
+  .chip.selected { background: var(--green); border-color: var(--green); color: #fff; }
+  .chip-add {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    max-width: 360px;
+  }
+  .chip-add input {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    color: var(--ink);
+    background: #fff;
+  }
+  .chip-add input:focus { outline: none; border-color: var(--green); }
+  .chip-add button {
+    flex: none;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 9px 14px;
+    cursor: pointer;
+  }
+  .chip-add button:hover { border-color: var(--green); }
+  .eng-note {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .eng-note.ready { color: var(--green); font-weight: 600; }
+
+  /* Requests */
+  .req {
+    display: flex;
+    gap: 14px;
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+  }
+  .req:first-of-type { border-top: none; }
+  .req .ava {
+    flex: none;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: var(--green-tint);
+    color: var(--green);
+    display: grid; place-items: center;
+    font-weight: 600; font-size: 15px;
+  }
+  .req .body { flex: 1; min-width: 0; }
+  .req .top {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .req .who-name { font-weight: 600; font-size: 15px; }
+  .req .meta { font-size: 13px; color: var(--muted); }
+  .req .note {
+    font-size: 14px;
+    color: #3a463d;
+    margin-top: 5px;
+  }
+  .req .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .btn {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 9px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+  }
+  .btn-accept {
+    background: var(--green);
+    color: #fff;
+  }
+  .btn-accept:hover { background: #006d07; }
+  .btn-decline {
+    background: #fff;
+    color: var(--muted);
+    border-color: var(--line);
+  }
+  .btn-decline:hover { border-color: #cfc9bb; color: var(--ink); }
+
+  .empty {
+    text-align: center;
+    padding: 30px 16px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  /* Upcoming */
+  .up {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+  }
+  .up:first-of-type { border-top: none; }
+  .up .date {
+    flex: none;
+    width: 52px;
+    text-align: center;
+    border-radius: 10px;
+    background: var(--green-tint);
+    padding: 6px 0;
+  }
+  .up .date .m { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--green); letter-spacing: 0.06em; }
+  .up .date .d { font-family: var(--serif); font-weight: 800; font-size: 22px; line-height: 1; color: var(--forest); }
+  .up .info { flex: 1; }
+  .up .info .n { font-weight: 600; font-size: 14px; }
+  .up .info .t { font-size: 13px; color: var(--muted); }
+
+  /* Stats */
+  .stat {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 13px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stat:first-of-type { border-top: none; padding-top: 2px; }
+  .stat .lbl { font-size: 14px; color: var(--muted); }
+  .stat .num { font-family: var(--serif); font-weight: 800; font-size: 24px; color: var(--forest); }
+
+  /* Profile completeness */
+  .meter {
+    height: 7px;
+    border-radius: 99px;
+    background: var(--line);
+    overflow: hidden;
+    margin: 12px 0 14px;
+  }
+  .meter span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--green-light));
+    border-radius: 99px;
+  }
+  .todo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13px;
+    padding: 5px 0;
+  }
+  .todo .dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    flex: none;
+  }
+  .todo.done .dot {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .todo.done .dot::after {
+    content: "";
+    display: block;
+    width: 4px; height: 7px;
+    border: solid #fff;
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+    margin: 1px auto;
+  }
+  .todo.done span { color: var(--muted); text-decoration: line-through; }
+  .link-btn {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  .link-btn:hover { text-decoration: underline; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--forest);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 10px 30px rgba(15,61,30,0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 50;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Large screens: let the layout breathe instead of floating in a
+     1200px island. */
+  @media (min-width: 1440px) {
+    .wrap { max-width: 1320px; }
+    .col-rail { flex-basis: 340px; }
+  }
+
+  /* Small laptops / squeezed iframes: collapse before the rail starts
+     crushing the main column and cramping request rows. In this band the
+     rail cards (impact, profile) sit 2-up so they don't stretch sparse
+     and full-width. */
+  @media (max-width: 1020px) {
+    .grid { flex-direction: column; align-items: stretch; }
+    .col-rail {
+      flex-basis: auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  /* Phones and narrow tablets: everything single column. */
+  @media (max-width: 640px) {
+    .col-rail { grid-template-columns: 1fr; }
+  }
+
+  /* Phones */
+  @media (max-width: 560px) {
+    .who .name { display: none; }
+    .cap-control { gap: 14px; }
+    .stepper button { width: 44px; }
+    .stepper .val { min-width: 52px; }
+    .req .actions { width: 100%; }
+    .req .actions .btn { flex: 1; min-height: 44px; }
+  }
+
+  /* Narrow phones */
+  @media (max-width: 420px) {
+    .brand .context { display: none; }
+    .brand .logo { height: 24px; }
+    .toast { left: 16px; right: 16px; transform: translateY(20px); white-space: normal; }
+    .toast.show { transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  /* ---------- Live-build additions: request note clamp, decline modal ---------- */
+  .req .note {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .req .tags {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+  }
+  .req .tag {
+    font-size: 11.5px; font-weight: 600; color: var(--muted);
+    background: var(--cream); border: 1px solid var(--line);
+    border-radius: 999px; padding: 3px 10px;
+  }
+  .req .req-date { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .btn.loading, .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .up .info .t a { color: var(--green); font-weight: 600; text-decoration: none; }
+  .up .info .t a:hover { text-decoration: underline; }
+
+  .cp-overlay {
+    position: fixed; inset: 0; background: rgba(15,33,20,0.45);
+    display: none; align-items: center; justify-content: center;
+    padding: 20px; z-index: 60;
+  }
+  .cp-overlay.open { display: flex; }
+  .cp-modal {
+    background: #fff; border-radius: 14px; padding: 22px;
+    width: 100%; max-width: 440px; box-shadow: var(--shadow);
+    position: relative;
+  }
+  .cp-modal h3 { font-family: var(--serif); font-weight: 700; font-size: 18px; margin-bottom: 6px; }
+  .cp-modal p { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  .cp-modal textarea {
+    width: 100%; min-height: 84px; resize: vertical;
+    font-family: var(--sans); font-size: 13.5px; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+  }
+  .cp-modal textarea:focus { outline: none; border-color: var(--green); }
+  .cp-modal .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+  .cp-modal .x {
+    position: absolute; top: 12px; right: 14px;
+    background: none; border: none; font-size: 20px; color: var(--muted);
+    cursor: pointer; line-height: 1;
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <img class="logo" src="https://cdn.prod.website-files.com/68bf2f9e0722f5e0b402ad4d/691bf346a23098b5a5a4c19b_CloverPath_HorizontalLogo_FullColor.png" alt="CloverPath" />
+      <span class="context">Alumni</span>
+    </div>
+    <div class="who">
+      <span class="name" id="userName"></span>
+      <span class="avatar" id="userAvatar">·</span>
+      <button class="ghost-btn">Sign out</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <style>
+      .status-banner { display: none; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
+      .status-banner.pending { display: block; background: #fbf3e3; border: 1px solid #ecd9a8; color: #7a5b12; }
+      .status-banner.rejected { display: block; background: #fdf3f2; border: 1px solid #e8c9c5; color: #b42318; }
+    </style>
+    <div class="status-banner" id="cpStatusBanner"></div>
+    <div class="welcome">
+      <h1 id="greeting">Welcome back</h1>
+      <p>Set how many coffee chats you want to take this month, then review who has reached out. You are always in control of how much you take on.</p>
+    </div>
+
+    <div class="grid">
+      <!-- MAIN COLUMN -->
+      <div class="col-main">
+
+        <!-- Capacity hero -->
+        <section class="card capacity card-pad">
+          <div class="eyebrow">This month</div>
+          <h2>Coffee chats you are open to</h2>
+          <p class="cap-sub">Students can request a chat with you until you reach this number. Change it anytime.</p>
+
+          <div class="cap-control">
+            <div class="stepper">
+              <button id="capMinus" aria-label="Fewer chats">&minus;</button>
+              <div class="val" id="capVal">0</div>
+              <button id="capPlus" aria-label="More chats">+</button>
+            </div>
+            <div class="cap-label">
+              <strong id="capWord">chats this month</strong>
+              <span id="capScheduled">Paused for this month</span>
+            </div>
+          </div>
+
+          <div class="pips" id="pips" aria-hidden="true"></div>
+          <p class="cap-foot" id="capFoot">Filled circles are chats already on your calendar.</p>
+        </section>
+
+        <!-- Requests -->
+        <section class="card card-pad">
+          <div class="card-head">
+            <h2>Chat requests</h2>
+            <span class="count" id="reqCount">3 waiting</span>
+          </div>
+          <p class="sub">A quick yes or no is all it takes. No prep required.</p>
+          <div id="reqList" style="margin-top:8px;"></div>
+        </section>
+
+        <!-- Upcoming -->
+        <section class="card card-pad">
+          <div class="card-head">
+            <h2>Upcoming chats</h2>
+          </div>
+          <div id="upList" style="margin-top:8px;"></div>
+        </section>
+
+      </div>
+
+      <!-- RAIL -->
+      <div class="col-rail">
+
+        <section class="card card-pad">
+          <div class="card-head"><h2>Your impact</h2></div>
+          <div class="stat"><span class="lbl">Chats completed</span><span class="num" id="stCompleted">0</span></div>
+          <div class="stat"><span class="lbl">Students helped</span><span class="num" id="stStudents">0</span></div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Decline modal (live build) -->
+  <div class="cp-overlay" id="declineOverlay" role="dialog" aria-modal="true" aria-labelledby="declineTitle">
+    <div class="cp-modal">
+      <button class="x" data-decline-close aria-label="Close">&times;</button>
+      <h3 id="declineTitle">Pass on this request?</h3>
+      <p>No problem — career services will match the student with someone else. The student never sees who passed.</p>
+      <label for="declineNote" style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">Anything career services should know? (Optional)</label>
+      <textarea id="declineNote" maxlength="500" placeholder="e.g. Traveling this month, happy to help in the fall"></textarea>
+      <div class="actions">
+        <button class="btn btn-decline" data-decline-close>Keep it</button>
+        <button class="btn btn-accept" id="declineConfirm">Pass on this one</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   LIVE DATA LAYER — no mock data on this page.
+   Capacity stepper, incoming request inbox, upcoming chats, and impact
+   stats all come from Supabase. All writes go through SECURITY DEFINER
+   RPCs; this page never writes coffee_chats or
+   alumni_coffee_chat_capacity directly (RLS blocks it).
+   ============================================================ */
+const CP_SUPABASE_URL = 'https://clhuplhaejneecbyhphh.supabase.co';
+const CP_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNsaHVwbGhhZWpuZWVjYnlocGhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2Mzc5OTksImV4cCI6MjA3NjIxMzk5OX0.ropRR6Izmcy1sRV5v9HDDvBTlCTTGnJcLUvdSyYloBI';
+
+let cpSb = null;
+try {
+  if (window.supabase && window.supabase.createClient) {
+    cpSb = window.supabase.createClient(CP_SUPABASE_URL, CP_SUPABASE_ANON_KEY);
+  }
+} catch (e) { console.warn('[Alumni] Supabase client init failed', e); }
+
+/* ---------- Iframe session bridge ----------
+   Same contract as the student dashboard: we ping the parent with
+   IFRAME_READY; the parent (Webflow page custom code) replies with
+   SUPABASE_SESSION carrying access/refresh tokens; setSession persists it,
+   and the ensureAuth poll below picks it up. */
+window.addEventListener('message', function (event) {
+  /* Proper hostname check: exact apex or a real *.clover-path.com subdomain.
+     A substring test would let https://clover-path.com.evil.example through. */
+  var okOrigin = false;
+  try {
+    var h = new URL(event.origin).hostname;
+    okOrigin = (h === 'clover-path.com') || h.endsWith('.clover-path.com');
+  } catch (e) { okOrigin = false; }
+  if (!okOrigin) return;
+  var d = event.data;
+  if (d && d.type === 'SUPABASE_SESSION' && d.session && cpSb) {
+    cpSb.auth.setSession({
+      access_token: d.session.access_token,
+      refresh_token: d.session.refresh_token
+    }).then(function (res) {
+      if (res.error) console.error('[bridge] setSession failed', res.error);
+      else console.log('[bridge] session set');
+    });
+  }
+});
+if (window.parent !== window) {
+  try { window.parent.postMessage({ type: 'IFRAME_READY' }, '*'); } catch (e) {}
+}
+
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
+const FMT_LABELS = { in_person: 'In person', virtual: 'Virtual', either: 'Either works' };
+const TF_LABELS  = { this_month: 'This month', next_month: 'Next month', flexible: 'Flexible' };
+
+const state = {
+  user: null,            // Supabase auth user
+  profile: null,         // { full_name, email, entitlement, organization_id }
+  ready: false,          // live data loaded at least once
+  target: 0,             // monthly_capacity
+  scheduled: 0,          // used this month: accepted_at in current month, status upcoming|completed
+  requests: [],          // coffee_chats rows, status = pending_response, assigned to me
+  upcoming: []           // coffee_chats rows, status = upcoming, assigned to me
+};
+
+const $ = (id) => document.getElementById(id);
+
+/* ---------- Auth: poll for a shared session (same pattern as the student
+   dashboard subpages — the parent frame delivers the session via postMessage
+   to a script that persists it where any client on this origin can read). ---------- */
+function ensureAuth() {
+  return new Promise((resolve) => {
+    if (!cpSb) return resolve(null);
+    let tries = 0;
+    (function poll() {
+      tries++;
+      cpSb.auth.getSession().then((res) => {
+        const session = res && res.data ? res.data.session : null;
+        if (session && session.user) return resolve(session.user);
+        if (tries >= 30) return resolve(null);
+        setTimeout(poll, 500);
+      }).catch(() => {
+        if (tries >= 30) return resolve(null);
+        setTimeout(poll, 500);
+      });
+    })();
+  });
+}
+
+function setLiveMessage(msg) {
+  $("reqList").innerHTML = '<div class="empty">' + escapeHtml(msg) + '</div>';
+  $("upList").innerHTML = '<div class="empty">' + escapeHtml(msg) + '</div>';
+  $("reqCount").textContent = '';
+}
+
+function startOfMonthISO() {
+  const d = new Date();
+  return new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
+}
+
+function loadLive() {
+  setLiveMessage('Loading...');
+  return ensureAuth().then((user) => {
+    if (!user) {
+      setLiveMessage('Sign in to see your coffee chat requests.');
+      return;
+    }
+    state.user = user;
+    return cpSb.from('profiles')
+      .select('full_name, email, entitlement, organization_id')
+      .eq('id', user.id).single()
+      .then((res) => {
+        state.profile = (res && res.data) || { full_name: null, email: user.email };
+        const name = (state.profile.full_name || state.profile.email || 'there').trim();
+        $("userName").textContent = name;
+        $("userAvatar").textContent = name.split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase() || 'A';
+        $("greeting").textContent = "Welcome back, " + name.split(/\s+/)[0];
+        return Promise.all([
+          /* Own capacity row (RLS: own row). Missing row = capacity 0. */
+          cpSb.from('alumni_coffee_chat_capacity')
+            .select('monthly_capacity').eq('alum_user_id', user.id).maybeSingle(),
+          /* Chats assigned to me: inbox + upcoming + this-month usage. */
+          cpSb.from('coffee_chats')
+            .select('id, status, student_name, student_email, industry, topic, format_preference, timeframe, created_at, accepted_at')
+            .eq('alumni_user_id', user.id)
+            .in('status', ['pending_response', 'upcoming', 'completed'])
+            .order('created_at', { ascending: false }),
+          /* Own review status (RLS: own row). Drives the soft-pending banner. */
+          cpSb.from('alumni_profiles')
+            .select('status').eq('user_id', user.id).maybeSingle()
+        ]);
+      })
+      .then((results) => {
+        if (!results) return;
+        const capRes = results[0], chatRes = results[1];
+        /* Soft-pending banner: pending alumni use the full dashboard but see
+           why no requests arrive yet; rejected alumni get a contact path. */
+        (function () {
+          const b = document.getElementById('cpStatusBanner');
+          if (!b) return;
+          const apRes = results[2];
+          const st = apRes && apRes.data ? apRes.data.status : null;
+          if (st === 'pending') {
+            b.className = 'status-banner pending';
+            b.textContent = 'Your profile is awaiting review by your school\'s team. You can set everything up now; students can be matched with you once you\'re approved.';
+          } else if (st === 'rejected') {
+            b.className = 'status-banner rejected';
+            b.textContent = 'We couldn\'t verify your alumni status. Reach out to your school\'s alumni relations team and we\'ll get it sorted.';
+          } else {
+            b.className = 'status-banner';
+          }
+        })();
+        state.target = (capRes && capRes.data && capRes.data.monthly_capacity) || 0;
+        if (chatRes.error) {
+          console.error('[Alumni] chats load failed', chatRes.error);
+          setLiveMessage('Could not load your requests. Please refresh and try again.');
+          renderCapacity();
+          return;
+        }
+        const rows = chatRes.data || [];
+        state.requests = rows.filter(r => r.status === 'pending_response');
+        state.upcoming = rows.filter(r => r.status === 'upcoming');
+        const som = new Date(startOfMonthISO()).getTime();
+        state.scheduled = rows.filter(r =>
+          (r.status === 'upcoming' || r.status === 'completed') &&
+          r.accepted_at && new Date(r.accepted_at).getTime() >= som
+        ).length;
+        // Impact stats, computed from real rows: all-time completed chats and
+        // distinct students across completed + upcoming.
+        const done = rows.filter(r => r.status === 'completed');
+        $("stCompleted").textContent = done.length;
+        const students = new Set(rows
+          .filter(r => r.status === 'completed' || r.status === 'upcoming')
+          .map(r => r.student_email || r.student_name).filter(Boolean));
+        $("stStudents").textContent = students.size;
+        state.ready = true;
+        renderCapacity();
+        renderRequests();
+        renderUpcoming();
+      });
+  }).catch((e) => {
+    console.error('[Alumni] live load error', e);
+    setLiveMessage('Could not load your requests. Please refresh and try again.');
+  });
+}
+
+function init() {
+  renderCapacity();
+  loadLive();
+}
+
+/* ---------- Capacity (LIVE) ---------- */
+function renderCapacity() {
+  $("capVal").textContent = state.target;
+  $("capWord").textContent = state.target === 1 ? "chat this month" : "chats this month";
+
+  const open = Math.max(0, state.target - state.scheduled);
+  if (state.target === 0) {
+    $("capScheduled").textContent = "Paused for this month";
+  } else {
+    $("capScheduled").textContent =
+      state.scheduled + " scheduled, " + open + (open === 1 ? " spot open" : " spots open");
+  }
+
+  // pips: filled = accepted this month, outline = open
+  const pips = $("pips");
+  pips.innerHTML = "";
+  for (let i = 0; i < state.target; i++) {
+    const p = document.createElement("div");
+    p.className = "pip" + (i < state.scheduled ? " filled" : "");
+    pips.appendChild(p);
+  }
+
+  const foot = $("capFoot");
+  if (state.target === 0) {
+    foot.textContent = "You aren't currently taking coffee chats. Set a capacity to opt in.";
+    foot.classList.add("paused");
+  } else {
+    foot.textContent = "Filled circles are chats you've accepted this month.";
+    foot.classList.remove("paused");
+  }
+
+  $("capMinus").disabled = state.target <= 0 || state.target <= state.scheduled;
+  $("capPlus").disabled = state.target >= 12;
+}
+
+/* Stepper writes through set_alumni_capacity, debounced 500ms so a quick
+   run of clicks lands as a single RPC with the final value. */
+let capDebounce = null;
+let capLastSaved = null;
+function changeTarget(delta) {
+  const next = state.target + delta;
+  if (next < state.scheduled) {
+    toast("You already have " + state.scheduled + " accepted this month.");
+    return;
+  }
+  if (next < 0 || next > 12) return;
+  state.target = next;
+  renderCapacity();
+  if (!cpSb || !state.user) { toast("Not connected. Please refresh and sign in."); return; }
+  clearTimeout(capDebounce);
+  capDebounce = setTimeout(() => {
+    const val = state.target;
+    if (val === capLastSaved) return;
+    cpSb.rpc('set_alumni_capacity', { p_capacity: val }).then((res) => {
+      if (res.error) {
+        console.error('[Alumni] capacity save failed', res.error);
+        toast('Could not save your capacity: ' + res.error.message);
+        return;
+      }
+      capLastSaved = res.data && typeof res.data.monthly_capacity === 'number'
+        ? res.data.monthly_capacity : val;
+      toast(val === 0 ? 'Paused for this month.' : 'Capacity saved: ' + val + ' this month.');
+    }).catch((e) => {
+      console.error('[Alumni] capacity save error', e);
+      toast('Could not save your capacity. Please try again.');
+    });
+  }, 500);
+}
+
+/* ---------- Requests inbox (LIVE) ---------- */
+function renderRequests() {
+  const list = $("reqList");
+  const count = $("reqCount");
+  list.innerHTML = "";
+
+  if (!state.ready) { list.innerHTML = '<div class="empty">Loading...</div>'; count.textContent = ''; return; }
+
+  if (state.requests.length === 0) {
+    list.innerHTML = '<div class="empty">No pending requests right now.</div>';
+    count.textContent = "All clear";
+    return;
+  }
+  count.textContent = state.requests.length + " waiting";
+
+  state.requests.forEach((r) => {
+    const name = r.student_name || 'A student';
+    const initialsTxt = name.split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+    const tags = [];
+    if (r.format_preference && FMT_LABELS[r.format_preference]) tags.push(FMT_LABELS[r.format_preference]);
+    if (r.timeframe && TF_LABELS[r.timeframe]) tags.push(TF_LABELS[r.timeframe]);
+    const reqDate = r.created_at
+      ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+
+    const el = document.createElement("div");
+    el.className = "req";
+    el.innerHTML =
+      '<div class="ava">' + escapeHtml(initialsTxt) + '</div>' +
+      '<div class="body">' +
+        '<div class="top"><span class="who-name">' + escapeHtml(name) + '</span>' +
+        '<span class="meta">' + escapeHtml(r.industry || '') + '</span></div>' +
+        '<div class="note">' + escapeHtml(r.topic || '') + '</div>' +
+        '<div class="tags">' + tags.map(t => '<span class="tag">' + escapeHtml(t) + '</span>').join('') + '</div>' +
+        (reqDate ? '<div class="req-date">Requested ' + reqDate + '</div>' : '') +
+        '<div class="actions">' +
+          '<button class="btn btn-accept" data-accept="' + escapeHtml(r.id) + '">Accept</button>' +
+          '<button class="btn btn-decline" data-decline="' + escapeHtml(r.id) + '">Not now</button>' +
+        '</div>' +
+      '</div>';
+    list.appendChild(el);
+  });
+
+  list.querySelectorAll("[data-accept]").forEach((b) =>
+    b.addEventListener("click", () => accept(b.dataset.accept, b)));
+  list.querySelectorAll("[data-decline]").forEach((b) =>
+    b.addEventListener("click", () => openDecline(b.dataset.decline)));
+}
+
+/* ---------- Upcoming (LIVE) ---------- */
+function renderUpcoming() {
+  const list = $("upList");
+  list.innerHTML = "";
+  if (!state.ready) { list.innerHTML = '<div class="empty">Loading...</div>'; return; }
+  if (state.upcoming.length === 0) {
+    list.innerHTML = '<div class="empty">Nothing scheduled yet. Accepted chats show up here.</div>';
+    return;
+  }
+  state.upcoming.forEach((u) => {
+    const d = u.accepted_at ? new Date(u.accepted_at) : new Date();
+    const month = d.toLocaleDateString('en-US', { month: 'short' });
+    const day = d.getDate();
+    const el = document.createElement("div");
+    el.className = "up";
+    el.innerHTML =
+      '<div class="date"><div class="m">' + escapeHtml(month) + '</div><div class="d">' + day + '</div></div>' +
+      '<div class="info"><div class="n">' + escapeHtml(u.student_name || 'Student') + '</div>' +
+      '<div class="t">' + escapeHtml(u.industry || '') +
+        (u.student_email ? '  &middot;  <a href="mailto:' + escapeHtml(u.student_email) + '">' + escapeHtml(u.student_email) + '</a>' : '') +
+      '</div>' +
+      (u.topic ? '<div class="t">' + escapeHtml(u.topic) + '</div>' : '') +
+      '</div>';
+    list.appendChild(el);
+  });
+}
+
+/* ---------- Accept / Decline (LIVE, through RPCs) ---------- */
+function accept(id, btn) {
+  if (btn && (btn.classList.contains('loading') || btn.disabled)) return;
+  if (!cpSb || !state.user) { toast('Not connected. Please refresh and sign in.'); return; }
+  const open = state.target - state.scheduled;
+  if (open <= 0) {
+    /* Soft guard only: the server allows the accept (AR made a deliberate
+       assignment), but flag it so the alum can raise their number first. */
+    if (!window.confirm('This would put you over your monthly number (' + state.scheduled + ' of ' + state.target + ' used). Accept anyway?')) return;
+  }
+  const r = state.requests.find((x) => x.id === id);
+  if (!r) return;
+  if (btn) { btn.disabled = true; btn.classList.add('loading'); btn.textContent = 'Accepting...'; }
+  const finish = () => { if (btn) { btn.disabled = false; btn.classList.remove('loading'); btn.textContent = 'Accept'; } };
+  cpSb.rpc('alum_accept_coffee_chat', { p_chat_id: id }).then((res) => {
+    finish();
+    if (res.error) {
+      console.error('[Alumni] accept failed', res.error);
+      toast('Could not accept: ' + res.error.message);
+      return;
+    }
+    state.requests = state.requests.filter((x) => x.id !== id);
+    const row = res.data || r;
+    state.upcoming.unshift(row);
+    state.scheduled += 1;
+    renderCapacity(); renderRequests(); renderUpcoming();
+    toast('Chat with ' + (r.student_name || 'the student').split(' ')[0] + ' confirmed. Career services will make the intro.');
+  }).catch((e) => {
+    finish();
+    console.error('[Alumni] accept error', e);
+    toast('Could not accept. Please try again.');
+  });
+}
+
+let declineChatId = null;
+function openDecline(id) {
+  declineChatId = id;
+  $("declineNote").value = '';
+  $("declineOverlay").classList.add('open');
+  setTimeout(() => $("declineNote").focus(), 50);
+}
+function closeDecline() { $("declineOverlay").classList.remove('open'); }
+$("declineOverlay").addEventListener('click', (e) => { if (e.target === $("declineOverlay")) closeDecline(); });
+document.querySelectorAll('[data-decline-close]').forEach(b => b.addEventListener('click', closeDecline));
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDecline(); });
+
+$("declineConfirm").addEventListener('click', function() {
+  const btn = this;
+  if (btn.classList.contains('loading') || btn.disabled) return;
+  if (!cpSb || !state.user) { toast('Not connected. Please refresh and sign in.'); return; }
+  const id = declineChatId;
+  const note = $("declineNote").value.trim();
+  btn.disabled = true; btn.classList.add('loading');
+  const finish = () => { btn.disabled = false; btn.classList.remove('loading'); };
+  cpSb.rpc('alum_decline_coffee_chat', { p_chat_id: id, p_note: note || null }).then((res) => {
+    finish();
+    if (res.error) {
+      console.error('[Alumni] decline failed', res.error);
+      toast('Could not pass on this request: ' + res.error.message);
+      return;
+    }
+    state.requests = state.requests.filter((x) => x.id !== id);
+    closeDecline();
+    renderRequests();
+    toast('Passed. Career services will find another match.');
+  }).catch((e) => {
+    finish();
+    console.error('[Alumni] decline error', e);
+    toast('Could not pass on this request. Please try again.');
+  });
+});
+
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(window._tt);
+  window._tt = setTimeout(() => t.classList.remove("show"), 2600);
+}
+
+$("capMinus").addEventListener("click", () => changeTarget(-1));
+$("capPlus").addEventListener("click", () => changeTarget(1));
+
+init();
+</script>
+
+<script>
+/* Iframe height reporter.
+   When this page is embedded in Webflow via an iframe, it posts its height
+   to the parent so the frame grows and shrinks with the content (accepting
+   or declining a request changes the height). Height is non-sensitive, so
+   a wildcard target origin is fine here. The session/auth bridge, which
+   does carry sensitive data, stays origin-scoped separately. */
+(function () {
+  function postHeight() {
+    var h = document.documentElement.scrollHeight;
+    try { parent.postMessage({ type: "CP_ALUMNI_RESIZE", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", postHeight);
+  window.addEventListener("resize", postHeight);
+  if (window.ResizeObserver) {
+    new ResizeObserver(postHeight).observe(document.body);
+  } else {
+    setInterval(postHeight, 1000);
+  }
+})();
+</script>
+</body>
+</html>
